@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-graphite-200;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+  ::selection {
+    @apply bg-ember-500/25;
+  }
+  :focus-visible {
+    outline: 2px solid #ff7a45;
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .container-hf {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8;
+  }
+  .tag {
+    @apply inline-flex items-center rounded-full border border-graphite-200 bg-graphite-50 px-2.5 py-1 font-mono text-[11px] tracking-tight text-graphite-600;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ember-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-ember-600 active:bg-ember-700 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-graphite-900 bg-transparent px-5 py-2.5 text-sm font-semibold text-graphite-900 transition hover:bg-graphite-900 hover:text-paper disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-graphite-600 transition hover:bg-graphite-100 hover:text-graphite-900;
+  }
+  .input-field {
+    @apply w-full rounded-xl border border-graphite-200 bg-white px-4 py-2.5 text-sm text-graphite-900 placeholder:text-graphite-400 transition focus:border-ember-500 focus:outline-none focus:ring-2 focus:ring-ember-500/20;
+  }
+  .card-surface {
+    @apply rounded-card border border-graphite-200 bg-white shadow-card transition hover:shadow-card-hover;
+  }
+  .skeleton {
+    @apply animate-pulse rounded-md bg-graphite-100;
+  }
+}
