@@ -1,4 +1,6 @@
-import "dotenv/config";
+import { config } from "dotenv";
+import path from "path";
+config({ path: path.resolve(process.cwd(), ".env.local") });
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import User from "../src/lib/models/User";
