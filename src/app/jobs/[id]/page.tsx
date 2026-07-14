@@ -27,8 +27,10 @@ async function getRelatedJobs(job: IJob): Promise<IJob[]> {
 }
 
 function formatSalary(min: number, max: number, currency: string) {
-  const fmt = (n: number) => n.toLocaleString();
   const symbol = currency === "USD" ? "$" : currency + " ";
+  const isHourly = max < 1000;
+  if (isHourly) return `${symbol}${min} – ${symbol}${max} / hour`;
+  const fmt = (n: number) => n.toLocaleString();
   return `${symbol}${fmt(min)} – ${symbol}${fmt(max)} / year`;
 }
 
