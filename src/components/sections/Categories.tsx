@@ -1,18 +1,34 @@
 import Link from "next/link";
 import { Code2, Server, Smartphone, Database, ShieldCheck, Cpu, Palette, LineChart } from "lucide-react";
+import { connectDB } from "@/lib/db";
+import Job from "@/lib/models/Job";
 
-const CATEGORIES = [
-  { name: "Frontend", icon: Code2, count: 96 },
-  { name: "Backend", icon: Server, count: 121 },
-  { name: "Mobile", icon: Smartphone, count: 54 },
-  { name: "Data & ML", icon: Database, count: 63 },
-  { name: "Security", icon: ShieldCheck, count: 28 },
-  { name: "DevOps / SRE", icon: Cpu, count: 47 },
-  { name: "Product Design", icon: Palette, count: 31 },
-  { name: "Engineering Mgmt", icon: LineChart, count: 22 },
+const CATEGORY_META = [
+  { name: "Frontend", icon: Code2 },
+  { name: "Backend", icon: Server },
+  { name: "Mobile", icon: Smartphone },
+  { name: "Data & ML", icon: Database },
+  { name: "Security", icon: ShieldCheck },
+  { name: "DevOps / SRE", icon: Cpu },
+  { name: "Product Design", icon: Palette },
+  { name: "Engineering Mgmt", icon: LineChart },
 ];
 
-export default function Categories() {
+async function getCategoryCounts(): Promise<Record<string, number>> {
+  try {
+    await connectDB();
+    const results = await Job.aggregate([{ $group: { _id: "$category", count: { $sum: 1 } } }]);
+    const counts: Record<string, number> = {};
+    for (const r of results) counts[r._id] = r.count;
+    return counts;
+  } catch {
+    return {};
+  }
+}
+
+export default async function Categories() {
+  const counts = await getCategoryCounts();
+
   return (
     <section className="border-b border-graphite-200 bg-graphite-50 py-20">
       <div className="container-hf">
@@ -24,7 +40,7 @@ export default function Categories() {
         </div>
 
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {CATEGORIES.map((c) => (
+          {CATEGORY_META.map((c) => (
             <Link
               key={c.name}
               href={`/jobs?category=${encodeURIComponent(c.name)}`}
@@ -35,7 +51,7 @@ export default function Categories() {
               </span>
               <div>
                 <p className="font-display text-sm font-semibold text-graphite-900">{c.name}</p>
-                <p className="mt-0.5 font-mono text-xs text-graphite-500">{c.count} open roles</p>
+                <p className="mt-0.5 font-mono text-xs text-graphite-500">{counts[c.name] ?? 0} open roles</p>
               </div>
             </Link>
           ))}
