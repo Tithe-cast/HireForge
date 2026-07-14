@@ -70,26 +70,40 @@ export default function Hero() {
         </div>
 
         {/* Signature element: animated "build log" terminal */}
-        <div className="w-full max-w-md rounded-2xl border border-graphite-700 bg-graphite-950/80 shadow-2xl backdrop-blur">
-          <div className="flex items-center gap-1.5 border-b border-graphite-800 px-4 py-3">
-            <Circle size={9} className="fill-graphite-600 text-graphite-600" />
-            <Circle size={9} className="fill-graphite-600 text-graphite-600" />
-            <Circle size={9} className="fill-graphite-600 text-graphite-600" />
-            <span className="ml-2 font-mono text-[11px] text-graphite-500">match-engine.log</span>
-          </div>
-          <div className="space-y-2.5 p-5 font-mono text-[12.5px] leading-relaxed">
-            {BUILD_STEPS.slice(0, visibleSteps).map((step, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <span className="mt-0.5 text-ember-500">{i === BUILD_STEPS.length - 1 ? "$" : "›"}</span>
-                <span className="text-graphite-500">{step.label}</span>
-                <span className="ml-auto text-right text-circuit-400">{step.value}</span>
-              </div>
-            ))}
-            {visibleSteps < BUILD_STEPS.length && (
-              <div className="flex items-center gap-1.5 text-graphite-600">
-                <span className="h-3.5 w-1.5 animate-pulse bg-ember-500" />
-              </div>
-            )}
+        <div className="w-full max-w-md">
+          <svg viewBox="0 0 220 72" className="mb-4 h-12 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 36h28l8-16h20l8 32h20l8-16h20" stroke="#4C8DFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.55" />
+            <path d="M118 36h18l6 12h20l6-12h44" stroke="#FF7A45" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />
+            <circle cx="6" cy="36" r="4" fill="#4C8DFF" />
+            <circle cx="34" cy="20" r="3" fill="#4C8DFF" opacity="0.7" />
+            <circle cx="62" cy="52" r="3" fill="#4C8DFF" opacity="0.7" />
+            <circle cx="118" cy="36" r="4" fill="#FF7A45" />
+            <circle cx="142" cy="48" r="3" fill="#FF7A45" opacity="0.8" />
+            <circle cx="168" cy="24" r="3" fill="#FF7A45" opacity="0.8" />
+            <circle cx="214" cy="36" r="4" fill="#FF7A45" />
+            <rect x="90" y="26" width="20" height="20" rx="4" stroke="#FF9A6C" strokeWidth="2" opacity="0.6" />
+          </svg>
+          <div className="rounded-2xl border border-graphite-700 bg-graphite-950/80 shadow-2xl backdrop-blur">
+            <div className="flex items-center gap-1.5 border-b border-graphite-800 px-4 py-3">
+              <Circle size={9} className="fill-graphite-600 text-graphite-600" />
+              <Circle size={9} className="fill-graphite-600 text-graphite-600" />
+              <Circle size={9} className="fill-graphite-600 text-graphite-600" />
+              <span className="ml-2 font-mono text-[11px] text-graphite-500">match-engine.log</span>
+            </div>
+            <div className="space-y-2.5 p-5 font-mono text-[12.5px] leading-relaxed">
+              {BUILD_STEPS.slice(0, visibleSteps).map((step, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <span className="mt-0.5 text-ember-500">{i === BUILD_STEPS.length - 1 ? "$" : "›"}</span>
+                  <span className="text-graphite-500">{step.label}</span>
+                  <span className="ml-auto text-right text-circuit-400">{step.value}</span>
+                </div>
+              ))}
+              {visibleSteps < BUILD_STEPS.length && (
+                <div className="flex items-center gap-1.5 text-graphite-600">
+                  <span className="h-3.5 w-1.5 animate-pulse bg-ember-500" />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
