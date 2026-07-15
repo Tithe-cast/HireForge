@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, SlidersHorizontal, ChevronLeft, ChevronRight , X } from "lucide-react";
 import JobCard from "@/components/JobCard";
 import JobCardSkeleton from "@/components/JobCardSkeleton";
 import type { IJob, JobListResponse } from "@/types";
@@ -66,14 +66,24 @@ export default function JobsExplorer() {
     <div>
       <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-graphite-400" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search by title, company, or tech stack…"
-            className="input-field pl-11"
-          />
-        </div>
+  <Search size={16} className={`pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-colors ${q ? "text-ember-500" : "text-graphite-400"}`} />
+  <input
+    value={q}
+    onChange={(e) => setQ(e.target.value)}
+    placeholder="Search by title, company, or tech stack…"
+    className="input-field pl-12 pr-10"
+  />
+  {q && (
+    <button
+      type="button"
+      onClick={() => setQ("")}
+      aria-label="Clear search"
+      className="absolute right-3.5 top-1/2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-full text-graphite-400 hover:bg-graphite-100 hover:text-graphite-600"
+    >
+      <X size={13} />
+    </button>
+  )}
+</div>
         <button type="button" onClick={() => setShowFilters(!showFilters)} className="btn-secondary shrink-0">
           <SlidersHorizontal size={15} /> Filters
         </button>
