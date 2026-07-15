@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import mongoose from "mongoose";
-import { MapPin, Briefcase, Clock, DollarSign, Layers } from "lucide-react";
+import { MapPin, Briefcase, Clock, DollarSign, Layers, Building2 } from "lucide-react";
 import { connectDB } from "@/lib/db";
 import Job from "@/lib/models/Job";
 import JobCard from "@/components/JobCard";
@@ -42,6 +42,21 @@ function timeAgo(dateStr: string) {
   return `Posted ${days} days ago`;
 }
 
+// Same alternating accent logic as the job card, so a company's color identity
+// stays consistent between the card grid and its own details page.
+function logoStyles(company: string) {
+  const hash = company.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return hash % 2 === 0
+    ? "border-circuit-500/25 bg-circuit-500/10 text-circuit-700"
+    : "border-ember-500/25 bg-ember-500/10 text-ember-700";
+}
+
+function workModeStyles(mode: string) {
+  if (mode === "Remote") return "border-circuit-500/30 bg-circuit-500/10 text-circuit-700";
+  if (mode === "On-site") return "border-ember-500/30 bg-ember-500/10 text-ember-700";
+  return "border-graphite-200 bg-graphite-50 text-graphite-600";
+}
+
 export default async function JobDetailsPage({ params }: { params: { id: string } }) {
   const job = await getJob(params.id);
   if (!job) notFound();
@@ -55,7 +70,7 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
           <div className="card-surface p-6 sm:p-8">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-graphite-200 bg-graphite-50 font-display text-lg font-bold text-graphite-600">
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border font-display text-lg font-bold ${logoStyles(job.company)}`}>
                   {job.companyLogo ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={job.companyLogo} alt={`${job.company} logo`} className="h-full w-full object-cover" />
@@ -71,16 +86,28 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
               <ApplyButton jobTitle={job.title} />
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 border-t border-graphite-100 pt-6 text-sm text-graphite-600">
-              <span className="flex items-center gap-1.5"><MapPin size={14} /> {job.location} · {job.workMode}</span>
-              <span className="flex items-center gap-1.5"><Briefcase size={14} /> {job.jobType} · {job.experienceLevel}</span>
-              <span className="flex items-center gap-1.5"><DollarSign size={14} /> {formatSalary(job.salaryMin, job.salaryMax, job.currency)}</span>
-              <span className="flex items-center gap-1.5"><Clock size={14} /> {timeAgo(job.createdAt)}</span>
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-graphite-100 pt-6 text-sm text-graphite-600">
+              <span className="flex items-center gap-1.5"><MapPin size={14} className="text-graphite-400" /> {job.location}</span>
+              <span className={`inline-flex items-center rounded-full border px-2.5 py-1 font-mono text-[11px] ${workModeStyles(job.workMode)}`}>
+                {job.workMode}
+              </span>
+              <span className="flex items-center gap-1.5"><Briefcase size={14} className="text-graphite-400" /> {job.jobType} · {job.experienceLevel}</span>
+              <span className="flex items-center gap-1.5 font-semibold text-ember-600"><DollarSign size={14} /> {formatSalary(job.salaryMin, job.salaryMax, job.currency)}</span>
+              <span className="flex items-center gap-1.5 text-graphite-400"><Clock size={14} /> {timeAgo(job.createdAt)}</span>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-1.5">
-              {job.techStack.map((t) => (
-                <span key={t} className="tag">{t}</span>
+              {job.techStack.map((t, i) => (
+                <span
+                  key={t}
+                  className={`inline-flex items-center rounded-full border px-2.5 py-1 font-mono text-[11px] ${
+                    i % 2 === 0
+                      ? "border-circuit-500/25 bg-circuit-500/10 text-circuit-700"
+                      : "border-ember-500/25 bg-ember-500/10 text-ember-700"
+                  }`}
+                >
+                  {t}
+                </span>
               ))}
             </div>
           </div>
@@ -97,7 +124,7 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
             <div className="mt-4 grid gap-x-8 gap-y-5 sm:grid-cols-2">
               <div>
                 <h3 className="flex items-center gap-1.5 text-sm font-semibold text-graphite-800">
-                  <Layers size={14} /> Responsibilities
+                  <Layers size={14} className="text-ember-600" /> Responsibilities
                 </h3>
                 <ul className="mt-2 space-y-1.5 text-sm text-graphite-600">
                   {job.responsibilities.map((r, i) => (
@@ -109,7 +136,7 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
               </div>
               <div>
                 <h3 className="flex items-center gap-1.5 text-sm font-semibold text-graphite-800">
-                  <Layers size={14} /> Requirements
+                  <Layers size={14} className="text-circuit-600" /> Requirements
                 </h3>
                 <ul className="mt-2 space-y-1.5 text-sm text-graphite-600">
                   {job.requirements.map((r, i) => (
@@ -138,14 +165,20 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
         {/* Sidebar */}
         <aside className="h-fit space-y-6 lg:sticky lg:top-24">
           <div className="card-surface p-6">
-            <h3 className="font-display text-sm font-semibold text-graphite-900">About {job.company}</h3>
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-circuit-500/10 text-circuit-600">
+              <Building2 size={16} />
+            </span>
+            <h3 className="mt-3 font-display text-sm font-semibold text-graphite-900">About {job.company}</h3>
             <p className="mt-2 text-sm leading-relaxed text-graphite-500">
               Posted by {job.postedByName}. Listings on HireForge come directly from the hiring team, with no third-party recruiters.
             </p>
           </div>
-          <div className="card-surface p-6">
-            <h3 className="font-display text-sm font-semibold text-graphite-900">Pay range</h3>
-            <p className="mt-2 font-mono text-lg font-semibold text-graphite-900">
+          <div className="card-surface overflow-hidden p-6">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-ember-500/10 text-ember-600">
+              <DollarSign size={16} />
+            </span>
+            <h3 className="mt-3 font-display text-sm font-semibold text-graphite-900">Pay range</h3>
+            <p className="mt-2 font-mono text-lg font-semibold text-ember-600">
               {formatSalary(job.salaryMin, job.salaryMax, job.currency)}
             </p>
             <p className="mt-1 text-xs text-graphite-500">Base salary, disclosed by the employer.</p>
