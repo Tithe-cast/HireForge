@@ -43,9 +43,9 @@ export default function AboutPage() {
         <div className="pointer-events-none absolute inset-0 bg-ember-glow" />
         <div className="container-hf relative max-w-2xl">
           <span className="tag border-graphite-700 bg-graphite-800 text-ember-400">our story</span>
-          <h1 className="mt-4 font-display text-4xl font-bold tracking-tight">
-            We built the job board we wished existed as engineers.
-          </h1>
+          <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-ember-500">
+               We built the job board we wished existed as engineers.
+           </h1>
           <p className="mt-5 text-graphite-300">
             HireForge started in 2024 after three founding engineers spent a combined four months
             wading through job boards that hid salary ranges, buried tech stacks in PDF attachments,
