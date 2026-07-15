@@ -22,7 +22,8 @@ export default async function StatsBar() {
   ];
 
   return (
-    <section className="relative z-10 -mt-8 border-b border-graphite-200 bg-paper pb-4">
+   <section className="border-b border-graphite-200 bg-paper py-12">
+
       <div className="container-hf">
         <div className="grid grid-cols-2 divide-y divide-graphite-100 rounded-2xl border border-graphite-200 bg-white shadow-card sm:grid-cols-4 sm:divide-x sm:divide-y-0">
           {stats.map((s) => (
