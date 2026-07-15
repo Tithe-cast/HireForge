@@ -19,6 +19,7 @@ export interface IJob {
   title: string;
   company: string;
   companyLogo?: string;
+  images?: string[];
   location: string;
   workMode: WorkMode;
   jobType: JobType;

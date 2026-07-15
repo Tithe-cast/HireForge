@@ -4,6 +4,7 @@ export interface JobDocument extends mongoose.Document {
   title: string;
   company: string;
   companyLogo?: string;
+  images?: string[];
   location: string;
   workMode: "Remote" | "Hybrid" | "On-site";
   jobType: "Full-time" | "Part-time" | "Contract" | "Internship" | "Freelance";
@@ -29,6 +30,7 @@ const JobSchema = new Schema<JobDocument>(
     title: { type: String, required: true, trim: true, maxlength: 120 },
     company: { type: String, required: true, trim: true, maxlength: 100 },
     companyLogo: { type: String },
+    images: [{ type: String }],
     location: { type: String, required: true, trim: true },
     workMode: { type: String, enum: ["Remote", "Hybrid", "On-site"], required: true },
     jobType: {

@@ -61,6 +61,90 @@ export const BLOG_POSTS = [
     ],
   },
 ];
+export interface CompanyReview {
+  author: string;
+  roleAtCompany: string;
+  rating: number; // 1-5
+  text: string;
+}
+
+export interface CompanyReviewData {
+  averageRating: number;
+  reviews: CompanyReview[];
+}
+
+// Reviews/ratings are shown on a job's details page only when the company
+
+export const COMPANY_REVIEWS: Record<string, CompanyReviewData> = {
+  "Northwind Labs": {
+    averageRating: 4.4,
+    reviews: [
+      {
+        author: "Former Backend Engineer",
+        roleAtCompany: "Worked here 2022–2024",
+        rating: 5,
+        text: "Code review culture is genuinely one of the best I've worked with. Releases are frequent but never felt rushed, and on-call load was reasonable with good tooling.",
+      },
+      {
+        author: "Current Frontend Engineer",
+        roleAtCompany: "2+ years",
+        rating: 4,
+        text: "Hybrid schedule is real — two office days, not creeping toward more. Compensation reviews happen on schedule, which isn't always a given elsewhere.",
+      },
+    ],
+  },
+  "Ridgeline Analytics": {
+    averageRating: 4.6,
+    reviews: [
+      {
+        author: "Senior Data Engineer",
+        roleAtCompany: "1+ year, remote",
+        rating: 5,
+        text: "Fully remote and they mean it — no surprise 'come into office' policy changes. Management is unusually direct about company priorities and tradeoffs.",
+      },
+      {
+        author: "Former ML Engineer",
+        roleAtCompany: "Worked here 2021–2023",
+        rating: 4,
+        text: "Strong technical bar and interesting problems in forecasting. Growth into staff-level roles took longer than I expected, but the work itself was excellent.",
+      },
+    ],
+  },
+  "Fenwick Cloud": {
+    averageRating: 4.2,
+    reviews: [
+      {
+        author: "Current SRE",
+        roleAtCompany: "1+ year",
+        rating: 4,
+        text: "On-call is well-compensated and rotations are fair. Infrastructure is genuinely modern, not legacy dressed up for the job posting.",
+      },
+      {
+        author: "Former Security Engineer",
+        roleAtCompany: "Worked here 2023",
+        rating: 4,
+        text: "Small security team means broad ownership fast, which is either exciting or overwhelming depending on what you're looking for. Good mentorship from the lead.",
+      },
+    ],
+  },
+  "Meridian Health": {
+    averageRating: 4.3,
+    reviews: [
+      {
+        author: "Current Backend Engineer",
+        roleAtCompany: "2+ years",
+        rating: 4,
+        text: "Healthcare compliance requirements add real process overhead, but the team explains the 'why' well and it doesn't feel like bureaucracy for its own sake.",
+      },
+      {
+        author: "Former Junior Frontend Developer",
+        roleAtCompany: "Worked here 2023–2024",
+        rating: 5,
+        text: "Best mentorship I've had as an early-career engineer. My manager scoped my first few tickets carefully instead of throwing me into the deep end.",
+      },
+    ],
+  },
+};
 
 export const FAQS = [
   {

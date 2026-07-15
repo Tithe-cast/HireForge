@@ -70,6 +70,7 @@ const JobSchema = z.object({
   title: z.string().min(3).max(120),
   company: z.string().min(2).max(100),
   companyLogo: z.string().url().optional().or(z.literal("")),
+  images: z.array(z.string().url()).max(6).optional().default([]),
   location: z.string().min(2),
   workMode: z.enum(["Remote", "Hybrid", "On-site"]),
   jobType: z.enum(["Full-time", "Part-time", "Contract", "Internship", "Freelance"]),

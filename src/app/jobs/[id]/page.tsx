@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import mongoose from "mongoose";
-import { MapPin, Briefcase, Clock, DollarSign, Layers, Building2 } from "lucide-react";
+import { MapPin, Briefcase, Clock, DollarSign, Layers, Building2, Star, ImageIcon } from "lucide-react";
 import { connectDB } from "@/lib/db";
 import Job from "@/lib/models/Job";
 import JobCard from "@/components/JobCard";
 import ApplyButton from "@/components/ApplyButton";
+import { COMPANY_REVIEWS } from "@/lib/content";
 import type { IJob } from "@/types";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +56,20 @@ function workModeStyles(mode: string) {
   if (mode === "Remote") return "border-circuit-500/30 bg-circuit-500/10 text-circuit-700";
   if (mode === "On-site") return "border-ember-500/30 bg-ember-500/10 text-ember-700";
   return "border-graphite-200 bg-graphite-50 text-graphite-600";
+}
+
+function StarRating({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          size={14}
+          className={i < Math.round(rating) ? "fill-ember-500 text-ember-500" : "fill-graphite-200 text-graphite-200"}
+        />
+      ))}
+    </div>
+  );
 }
 
 export default async function JobDetailsPage({ params }: { params: { id: string } }) {
@@ -112,6 +127,26 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
             </div>
           </div>
 
+          {/* Photos / media (optional, employer-submitted) */}
+          {job.images && job.images.length > 0 && (
+            <section className="card-surface mt-6 p-6 sm:p-8">
+              <h2 className="flex items-center gap-1.5 font-display text-lg font-semibold text-graphite-900">
+                <ImageIcon size={16} className="text-circuit-600" /> Office &amp; team photos
+              </h2>
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {job.images.map((src, i) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    key={i}
+                    src={src}
+                    alt={`${job.company} photo ${i + 1}`}
+                    className="aspect-video w-full rounded-lg border border-graphite-200 object-cover"
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Overview */}
           <section className="card-surface mt-6 p-6 sm:p-8">
             <h2 className="font-display text-lg font-semibold text-graphite-900">Overview</h2>
@@ -148,6 +183,36 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
               </div>
             </div>
           </section>
+
+          {/* Reviews / ratings (optional, shown only when review data exists for this company) */}
+          {COMPANY_REVIEWS[job.company] && (
+            <section className="card-surface mt-6 p-6 sm:p-8">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-display text-lg font-semibold text-graphite-900">Reviews &amp; ratings</h2>
+                <div className="flex items-center gap-2">
+                  <StarRating rating={COMPANY_REVIEWS[job.company].averageRating} />
+                  <span className="font-mono text-sm font-semibold text-graphite-700">
+                    {COMPANY_REVIEWS[job.company].averageRating.toFixed(1)} / 5
+                  </span>
+                </div>
+              </div>
+              <div className="mt-5 space-y-4">
+                {COMPANY_REVIEWS[job.company].reviews.map((r, i) => (
+                  <div key={i} className="rounded-lg border border-graphite-100 bg-graphite-50 p-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="font-display text-sm font-semibold text-graphite-900">{r.author}</p>
+                      <StarRating rating={r.rating} />
+                    </div>
+                    <p className="mt-0.5 text-xs text-graphite-500">{r.roleAtCompany}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-graphite-600">{r.text}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-xs text-graphite-400">
+                Reviews reflect individual experiences at {job.company} and are not verified by HireForge.
+              </p>
+            </section>
+          )}
 
           {/* Related jobs */}
           {related.length > 0 && (
@@ -188,3 +253,4 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
     </div>
   );
 }
+

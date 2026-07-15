@@ -80,6 +80,7 @@ export default function AddJobPage() {
   const [responsibilities, setResponsibilities] = useState<string[]>([]);
   const [requirements, setRequirements] = useState<string[]>([]);
   const [techStack, setTechStack] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -105,6 +106,7 @@ export default function AddJobPage() {
           responsibilities,
           requirements,
           techStack,
+          images,
         }),
       });
       const data = await res.json();
@@ -201,6 +203,7 @@ export default function AddJobPage() {
         </div>
 
         <TagListInput label="Tech stack" values={techStack} onChange={setTechStack} placeholder="e.g. TypeScript — press Enter to add" />
+        <TagListInput label="Office / team photos (optional URLs)" values={images} onChange={setImages} placeholder="Paste an image URL — press Enter to add" />
         <TagListInput label="Responsibilities" values={responsibilities} onChange={setResponsibilities} placeholder="e.g. Own the checkout service — press Enter to add" />
         <TagListInput label="Requirements" values={requirements} onChange={setRequirements} placeholder="e.g. 4+ years with distributed systems — press Enter to add" />
 
