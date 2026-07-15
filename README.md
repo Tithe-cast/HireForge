@@ -1,10 +1,5 @@
 # HireForge
-
-A full-stack developer job portal built with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, **MongoDB** and **JWT authentication**.
-
-Real engineering roles with disclosed salary ranges, transparent tech stacks and a straight line from search to application — no recruiter noise.
-
----
+A full-stack developer job portal built to solve a real frustration in tech hiring: job boards that hide salary ranges and bury tech stacks behind vague titles. Every listing on HireForge requires a disclosed salary range and a structured tech-stack tag list before it can go live and the entire search experience — filtering by category, work mode, job type and experience level — is built around real database fields rather than keyword guessing. The platform supports two distinct account types: candidates who browse and apply to roles and employers who post and manage their own listings through a protected dashboard. Built with Next.js 14 (App Router) and TypeScript across the full stack, HireForge uses MongoDB with Mongoose for data persistence, JWT-based authentication with httpOnly cookies for secure sessions and Tailwind CSS for a consistent, fully responsive design system.
 
 ## Tech stack
 
