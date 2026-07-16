@@ -83,7 +83,7 @@ export default function RegisterPage() {
   <div className="h-px flex-1 bg-graphite-200" />
 </div>
 
-<form onSubmit={submit} className="space-y-4" noValidate>
+          <form onSubmit={submit} className="space-y-4" noValidate>
         
           {formError && (
             <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-600">{formError}</p>
