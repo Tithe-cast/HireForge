@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LogIn, Zap } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import { useToast } from "@/components/ToastProvider";
 
 // Simple inline brand mark so we don't pull in an extra icon package for one logo.
 function GoogleMark() {
@@ -22,6 +23,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refresh } = useAuth();
+  const { showToast } = useToast();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -52,18 +54,21 @@ function LoginForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        if (data.fieldErrors) setErrors(data.fieldErrors);
-        setFormError(data.error || "Login failed.");
-        return;
-      }
+  if (data.fieldErrors) setErrors(data.fieldErrors);
+  setFormError(data.error || "Login failed.");
+  showToast(data.error || "Login failed.", "error");
+  return;
+}
 
-      await refresh();
-      const redirectTo = searchParams.get("redirectTo") || "/";
-      router.push(redirectTo);
-      router.refresh();
-    } catch {
-      setFormError("Something went wrong. Please try again.");
-    } finally {
+await refresh();
+showToast(`Welcome back, ${data.user.name}!`);
+const redirectTo = searchParams.get("redirectTo") || "/";
+router.push(redirectTo);
+router.refresh();
+} catch {
+  setFormError("Something went wrong. Please try again.");
+  showToast("Something went wrong. Please try again.", "error");
+} finally {
       setLoading(false);
     }
   }

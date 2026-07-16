@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserPlus } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import { useToast } from "@/components/ToastProvider";
 
 type Role = "candidate" | "employer";
 
 export default function RegisterPage() {
   const router = useRouter();
   const { refresh } = useAuth();
+  const { showToast } = useToast();
 
   const [role, setRole] = useState<Role>("candidate");
   const [name, setName] = useState("");
@@ -36,17 +38,20 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        if (data.fieldErrors) setErrors(data.fieldErrors);
-        setFormError(data.error || "Registration failed.");
-        return;
-      }
+  if (data.fieldErrors) setErrors(data.fieldErrors);
+  setFormError(data.error || "Registration failed.");
+  showToast(data.error || "Registration failed.", "error");
+  return;
+}
 
-      await refresh();
-      router.push(role === "employer" ? "/jobs/add" : "/jobs");
-      router.refresh();
-    } catch {
-      setFormError("Something went wrong. Please try again.");
-    } finally {
+await refresh();
+showToast(`Welcome to HireForge, ${data.user.name}!`);
+router.push(role === "employer" ? "/jobs/add" : "/jobs");
+router.refresh();
+} catch {
+  setFormError("Something went wrong. Please try again.");
+  showToast("Something went wrong. Please try again.", "error");
+} finally {
       setLoading(false);
     }
   }

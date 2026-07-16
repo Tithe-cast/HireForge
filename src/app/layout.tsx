@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/components/AuthProvider";
+import { ToastProvider } from "@/components/ToastProvider";
 
 const display = Space_Grotesk({
   subsets: ["latin"],
@@ -27,11 +28,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${display.variable} ${body.variable} ${mono.variable}`}>
       <body className="bg-paper text-graphite-900 font-body antialiased">
-        <AuthProvider>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-        </AuthProvider>
+        <ToastProvider>
+  <AuthProvider>
+    <Navbar />
+    <main className="min-h-screen">{children}</main>
+    <Footer />
+  </AuthProvider>
+</ToastProvider>
       </body>
     </html>
   );

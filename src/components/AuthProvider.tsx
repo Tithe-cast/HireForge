@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ToastProvider";
 
 interface SessionUser {
   userId?: string;
@@ -30,6 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { showToast } = useToast();
 
   const refresh = useCallback(async () => {
     try {
@@ -48,11 +50,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   const logout = useCallback(async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setUser(null);
-    router.push("/");
-    router.refresh();
-  }, [router]);
+  await fetch("/api/auth/logout", { method: "POST" });
+  setUser(null);
+  showToast("You've been signed out.");
+  router.push("/");
+  router.refresh();
+}, [router, showToast]);
 
   return (
     <AuthContext.Provider value={{ user, loading, refresh, logout }}>{children}</AuthContext.Provider>
