@@ -3,6 +3,7 @@ import { z } from "zod";
 import { connectDB } from "@/lib/db";
 import Job from "@/lib/models/Job";
 import { getSessionUser } from "@/lib/session";
+import { sendEmail } from "@/lib/email";
 
 export async function GET(req: NextRequest) {
   try {
@@ -115,6 +116,20 @@ export async function POST(req: NextRequest) {
       ...parsed.data,
       postedBy: user.userId,
       postedByName: user.name,
+    });
+
+    void sendEmail({
+      to: user.email,
+      subject: `Your listing "${job.title}" is live on HireForge`,
+      html: `
+        <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
+          <h2 style="color: #14161A;">Your job listing is live</h2>
+          <p>Hi ${user.name},</p>
+          <p><strong>${job.title}</strong> at <strong>${job.company}</strong> is now visible to candidates on HireForge.</p>
+          <p style="color: #6B7078; font-size: 14px;">You can manage this listing anytime from your Manage Jobs dashboard.</p>
+          <p style="margin-top: 24px; font-size: 13px; color: #9297A0;">— The HireForge team</p>
+        </div>
+      `,
     });
 
     return NextResponse.json({ job }, { status: 201 });

@@ -98,7 +98,7 @@ export default async function JobDetailsPage({ params }: { params: { id: string 
                   <p className="mt-1 text-graphite-500">{job.company}</p>
                 </div>
               </div>
-              <ApplyButton jobTitle={job.title} />
+              <ApplyButton jobId={job._id} jobTitle={job.title} />
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-graphite-100 pt-6 text-sm text-graphite-600">

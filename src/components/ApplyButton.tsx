@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Eye } from "lucide-react";
+import { CheckCircle2, Eye, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
+import { useToast } from "@/components/ToastProvider";
 
-export default function ApplyButton({ jobTitle }: { jobTitle: string }) {
+export default function ApplyButton({ jobId, jobTitle }: { jobId: string; jobTitle: string }) {
   const { user, loading } = useAuth();
+  const { showToast } = useToast();
   const [applied, setApplied] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   if (loading) return <div className="skeleton h-10 w-36 rounded-full" />;
 
@@ -35,9 +38,33 @@ export default function ApplyButton({ jobTitle }: { jobTitle: string }) {
     );
   }
 
+  async function handleApply() {
+    setSubmitting(true);
+    try {
+      const res = await fetch(`/api/jobs/${jobId}/apply`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "Couldn't submit your application. Please try again.", "error");
+        return;
+      }
+      setApplied(true);
+      showToast("Application sent — check your email for confirmation.");
+    } catch {
+      showToast("Something went wrong. Please try again.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
-    <button onClick={() => setApplied(true)} className="btn-primary shrink-0" aria-label={`Apply for ${jobTitle}`}>
-      Apply now
+    <button
+      onClick={handleApply}
+      disabled={submitting}
+      className="btn-primary shrink-0"
+      aria-label={`Apply for ${jobTitle}`}
+    >
+      {submitting ? <Loader2 size={16} className="animate-spin" /> : null}
+      {submitting ? "Submitting…" : "Apply now"}
     </button>
   );
 }
