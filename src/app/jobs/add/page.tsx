@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlusCircle, X } from "lucide-react";
+import { PlusCircle, X, Sparkles, Loader2 } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
+import ImageUploader from "@/components/ImageUploader";
 
 const CATEGORIES = ["Frontend", "Backend", "Mobile", "Data & ML", "Security", "DevOps / SRE", "Product Design", "Engineering Mgmt"];
 
@@ -63,10 +65,11 @@ function TagListInput({
 
 export default function AddJobPage() {
   const router = useRouter();
+  const { showToast } = useToast();
+
   const [form, setForm] = useState({
     title: "",
     company: "",
-    companyLogo: "",
     location: "",
     workMode: "Remote",
     jobType: "Full-time",
@@ -77,16 +80,62 @@ export default function AddJobPage() {
     fullDescription: "",
     category: "Frontend",
   });
+  const [companyLogo, setCompanyLogo] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
   const [responsibilities, setResponsibilities] = useState<string[]>([]);
   const [requirements, setRequirements] = useState<string[]>([]);
   const [techStack, setTechStack] = useState<string[]>([]);
-  const [images, setImages] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   function update<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  async function handleGenerateWithAI() {
+    if (!form.title.trim() || techStack.length === 0) {
+      showToast("Add a job title and at least one tech stack tag first.", "error");
+      return;
+    }
+    if (!form.company.trim()) {
+      showToast("Add a company name first.", "error");
+      return;
+    }
+
+    setAiLoading(true);
+    try {
+      const res = await fetch("/api/ai/generate-job-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: form.title,
+          company: form.company,
+          techStack,
+          category: form.category,
+          experienceLevel: form.experienceLevel,
+          jobType: form.jobType,
+          workMode: form.workMode,
+        }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        showToast(data.error || "AI generation failed.", "error");
+        return;
+      }
+
+      update("shortDescription", data.draft.shortDescription);
+      update("fullDescription", data.draft.fullDescription);
+      setResponsibilities(data.draft.responsibilities || []);
+      setRequirements(data.draft.requirements || []);
+      showToast("Draft generated — review and edit before publishing.");
+    } catch {
+      showToast("Something went wrong generating the draft.", "error");
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   async function submit(e: React.FormEvent) {
@@ -101,12 +150,13 @@ export default function AddJobPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          companyLogo: companyLogo[0] || "",
+          images,
           salaryMin: Number(form.salaryMin),
           salaryMax: Number(form.salaryMax),
           responsibilities,
           requirements,
           techStack,
-          images,
         }),
       });
       const data = await res.json();
@@ -114,13 +164,16 @@ export default function AddJobPage() {
       if (!res.ok) {
         if (data.fieldErrors) setErrors(data.fieldErrors);
         setFormError(data.error || "Could not create listing.");
+        showToast(data.error || "Could not create listing.", "error");
         return;
       }
 
+      showToast("Listing published — confirmation email sent.");
       router.push("/jobs/manage");
       router.refresh();
     } catch {
       setFormError("Something went wrong. Please try again.");
+      showToast("Something went wrong. Please try again.", "error");
     } finally {
       setLoading(false);
     }
@@ -144,10 +197,6 @@ export default function AddJobPage() {
             <label className="mb-1.5 block text-sm font-medium text-graphite-700">Company name</label>
             <input value={form.company} onChange={(e) => update("company", e.target.value)} className="input-field" placeholder="Acme Inc." />
             {errors.company && <p className="mt-1 text-xs text-red-600">{errors.company}</p>}
-          </div>
-          <div className="sm:col-span-2">
-            <label className="mb-1.5 block text-sm font-medium text-graphite-700">Company logo URL (optional)</label>
-            <input value={form.companyLogo} onChange={(e) => update("companyLogo", e.target.value)} className="input-field" placeholder="https://…" />
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-graphite-700">Location</label>
@@ -190,6 +239,26 @@ export default function AddJobPage() {
           </div>
         </div>
 
+        <ImageUploader label="Company logo" values={companyLogo} onChange={setCompanyLogo} multiple={false} maxFiles={1} />
+        <TagListInput label="Tech stack" values={techStack} onChange={setTechStack} placeholder="e.g. TypeScript — press Enter to add" />
+
+        <div className="rounded-xl border border-circuit-500/25 bg-circuit-500/5 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="flex items-center gap-1.5 text-sm font-semibold text-graphite-900">
+                <Sparkles size={15} className="text-circuit-600" /> Draft it with AI
+              </p>
+              <p className="mt-1 text-xs text-graphite-500">
+                Fill in the title, company, and tech stack above, then generate a first draft of the descriptions below.
+              </p>
+            </div>
+            <button type="button" onClick={handleGenerateWithAI} disabled={aiLoading} className="btn-secondary shrink-0 border-circuit-500 text-circuit-700 hover:bg-circuit-500 hover:text-white">
+              {aiLoading ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+              {aiLoading ? "Generating…" : "Generate with AI"}
+            </button>
+          </div>
+        </div>
+
         <div>
           <label className="mb-1.5 block text-sm font-medium text-graphite-700">Short description</label>
           <textarea value={form.shortDescription} onChange={(e) => update("shortDescription", e.target.value)} className="input-field" rows={2} maxLength={220} placeholder="One or two sentences shown on the job card." />
@@ -202,10 +271,9 @@ export default function AddJobPage() {
           {errors.fullDescription && <p className="mt-1 text-xs text-red-600">{errors.fullDescription}</p>}
         </div>
 
-        <TagListInput label="Tech stack" values={techStack} onChange={setTechStack} placeholder="e.g. TypeScript — press Enter to add" />
-        <TagListInput label="Office / team photos (optional URLs)" values={images} onChange={setImages} placeholder="Paste an image URL — press Enter to add" />
         <TagListInput label="Responsibilities" values={responsibilities} onChange={setResponsibilities} placeholder="e.g. Own the checkout service — press Enter to add" />
         <TagListInput label="Requirements" values={requirements} onChange={setRequirements} placeholder="e.g. 4+ years with distributed systems — press Enter to add" />
+        <ImageUploader label="Office / team photos (optional)" values={images} onChange={setImages} multiple maxFiles={6} />
 
         <button type="submit" disabled={loading} className="btn-primary w-full sm:w-auto">
           <PlusCircle size={16} /> {loading ? "Publishing…" : "Publish listing"}
