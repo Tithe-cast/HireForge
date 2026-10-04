@@ -1,7 +1,12 @@
 # HireForge
 
-A full-stack developer job portal built to solve a real frustration in tech hiring: job boards that hide salary ranges and bury tech stacks behind vague titles. Every listing on HireForge requires a disclosed salary range and a structured tech-stack tag list before it can go live and the entire search experience filtering by category, work mode, job type and experience level is built around real database fields rather than keyword guessing. The platform supports two distinct account types: candidates who browse and apply to roles and employers who post and manage their own listings through a protected dashboard. Built with Next.js 14 (App Router) and TypeScript across the full stack, HireForge uses MongoDB with Mongoose for data persistence, JWT-based authentication with httpOnly cookies for secure sessions and Tailwind CSS for a consistent, fully responsive design system.
-🔗 [Live Demo](https://hire-forge-gilt.vercel.app) · 
+A full-stack developer job portal built to solve a real frustration in tech hiring: job boards that hide salary ranges and bury tech stacks behind vague titles. Every listing on HireForge requires a disclosed salary range and a structured tech-stack tag list before it can go live, and the entire search experience — filtering by category, work mode, job type, and experience level — is built around real database fields rather than keyword guessing.
+
+The platform supports two account types: **candidates** who browse and apply to roles, and **employers** who post and manage their own listings through a protected dashboard, with an AI-assisted writer to help draft new postings.
+
+Built with Next.js 14 (App Router) and TypeScript across the full stack, HireForge uses MongoDB with Mongoose for data persistence, JWT-based authentication (with Google OAuth as an alternative sign-in) for secure sessions, and Tailwind CSS for a consistent, fully responsive design system.
+
+🔗 [Live Demo](https://hire-forge-gilt.vercel.app)
 
 ## Tech stack
 
@@ -12,15 +17,13 @@ A full-stack developer job portal built to solve a real frustration in tech hiri
 | Charts | Recharts |
 | Backend | Next.js API Routes (Node.js runtime) |
 | Database | MongoDB + Mongoose |
-| Auth | JWT (via `jose`), httpOnly cookies, bcrypt password hashing |
+| Auth | JWT (via `jose`), httpOnly cookies, bcrypt password hashing, Google OAuth |
 | Validation | Zod |
+| AI | Google Gemini API — generates job post drafts from title/stack/level |
+| Email | Resend — application and job-posting confirmation emails |
+| Image uploads | Cloudinary — unsigned client-side uploads for logos and office photos |
 
 ---
-
-
-## 4. Seed the database
-
-
 **Demo credentials** (also available via the "Log in with a demo account" buttons on the login page):
 
 | Role | Email | Password |
